@@ -1,5 +1,7 @@
 *.pyc
 
+.coverage
+
 venv/
 build/
 dist/
