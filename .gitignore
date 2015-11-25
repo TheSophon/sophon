@@ -1,0 +1,10 @@
+*.pyc
+
+.coverage
+
+venv/
+build/
+dist/
+sophon.egg-info/
+
+.cache/
