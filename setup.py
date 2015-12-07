@@ -23,5 +23,10 @@ setup(
     install_requires=[
         "tornado >= 4.3, < 5.0",
     ] + tests_requirements,
-    tests_require=tests_requirements
+    tests_require=tests_requirements,
+    entry_points={
+        "console_scripts": [
+            "sophon = sophon.app:main"
+        ],
+    },
 )
