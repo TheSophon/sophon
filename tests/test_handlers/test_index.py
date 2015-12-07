@@ -4,18 +4,17 @@
 import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
-from sophon.settings import SETTINGS
-from sophon.urls import URL_PATTERNS
+from sophon.handlers.index import IndexHandler
 
 
-class TestApp(AsyncHTTPTestCase):
+class TestHandlerIndex(AsyncHTTPTestCase):
 
     def get_app(self):
         return tornado.web.Application(
-            URL_PATTERNS, **SETTINGS
+            [(r"/", IndexHandler)]
         )
 
-    def test_app(self):
+    def test_index(self):
         response = self.fetch(r"/")
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body, "Hello World!")
