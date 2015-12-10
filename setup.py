@@ -6,7 +6,6 @@ from setuptools import find_packages, setup
 from sophon import __version__
 
 tests_requirements = [
-    "mock >= 1.2.0, < 2.0.0",
     "pytest >= 2.8.3, < 3.0.0",
     "pylint >= 1.4.4, < 2.0.0"
 ]
