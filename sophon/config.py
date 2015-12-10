@@ -5,3 +5,5 @@ TORNADO_SETTINGS = {
     "debug": True,
     "autoreload": True
 }
+
+SQLALCHEMY_DATABASE_URI = "mysql://root:@localhost/sophon?charset=utf8"

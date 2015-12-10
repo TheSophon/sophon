@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from setuptools import find_packages, setup
+
 from sophon import __version__
 
 tests_requirements = [
+    "mock >= 1.3.0, < 2.0.0",
     "pytest >= 2.8.3, < 3.0.0",
     "pylint >= 1.4.4, < 2.0.0"
 ]
@@ -22,6 +24,8 @@ setup(
     zip_safe=False,
     install_requires=[
         "tornado >= 4.3, < 5.0",
+        "SQLAlchemy >= 1.0.9, < 2.0.0",
+        "MySQL-python >= 1.2.5, < 2.0.0"
     ] + tests_requirements,
     tests_require=tests_requirements,
     entry_points={

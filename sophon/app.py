@@ -6,10 +6,12 @@ import tornado.ioloop
 import tornado.web
 
 from sophon.config import TORNADO_SETTINGS
+from sophon.database import init_db
 from sophon.urls import URL_PATTERNS
 
 
 def main():
+    init_db()
     application = tornado.web.Application(
         URL_PATTERNS, **TORNADO_SETTINGS
     )
