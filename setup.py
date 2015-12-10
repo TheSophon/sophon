@@ -23,9 +23,10 @@ setup(
     packages=find_packages(exclude=["tests"]),
     zip_safe=False,
     install_requires=[
-        "tornado >= 4.3, < 5.0",
+        "MySQL-python >= 1.2.5, < 2.0.0",
+        "passlib >= 1.6.5, < 2.0.0",
         "SQLAlchemy >= 1.0.9, < 2.0.0",
-        "MySQL-python >= 1.2.5, < 2.0.0"
+        "tornado >= 4.3, < 5.0"
     ] + tests_requirements,
     tests_require=tests_requirements,
     entry_points={
