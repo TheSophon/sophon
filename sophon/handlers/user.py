@@ -33,7 +33,7 @@ class LogoutHandler(BaseHandler):
         self.write({})
 
 
-class GetUserHandler(BaseHandler):
+class GetUserInfoHandler(BaseHandler):
 
     def get(self):
         username = self.get_secure_cookie("username")
