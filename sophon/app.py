@@ -5,13 +5,15 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 
-from sophon.settings import SETTINGS
+from sophon.config import TORNADO_SETTINGS
+from sophon.database import init_db
 from sophon.urls import URL_PATTERNS
 
 
 def main():
+    init_db()
     application = tornado.web.Application(
-        URL_PATTERNS, **SETTINGS
+        URL_PATTERNS, **TORNADO_SETTINGS
     )
     application.listen(8888)
     tornado.ioloop.IOLoop.current().start()
