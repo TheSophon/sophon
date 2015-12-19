@@ -7,7 +7,7 @@ from tornado.testing import AsyncHTTPTestCase
 from sophon.handlers.index import IndexHandler
 
 
-class TestHandlerIndex(AsyncHTTPTestCase):
+class TestIndexHandler(AsyncHTTPTestCase):
 
     def get_app(self):
         return tornado.web.Application(

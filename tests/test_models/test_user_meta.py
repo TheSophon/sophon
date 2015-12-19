@@ -3,6 +3,7 @@
 
 from unittest import TestCase
 
+import mock
 from passlib.hash import pbkdf2_sha256  # pylint: disable=no-name-in-module
 
 from sophon.models import UserMeta
@@ -35,8 +36,9 @@ class TestUserMeta(TestCase):
                                 public_key="/path/key2.pub")
         session.add(_insert_data)
 
-        _query_data = session.query(UserMeta).filter_by(username="Bob").first()
-        self.assertTrue(
-            pbkdf2_sha256.verify("chkpasswd", _query_data.password)
-        )
-
+        with mock.patch.object(
+            UserMeta, "query", session.query_property()
+        ) as _query:
+            self.assertTrue(
+                UserMeta.check_password("Bob", "chkpasswd")
+            )
