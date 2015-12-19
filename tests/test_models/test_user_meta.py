@@ -39,4 +39,3 @@ class TestUserMeta(TestCase):
         self.assertTrue(
             pbkdf2_sha256.verify("chkpasswd", _query_data.password)
         )
-
