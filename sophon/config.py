@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 TORNADO_SETTINGS = {
+    "cookie_secret": ".wwwpsgx.ktsy.o].b[jrdexye[bumys",
     "debug": True,
     "autoreload": True
 }
