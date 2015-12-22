@@ -31,4 +31,7 @@ class UserMeta(BaseModel):
     @classmethod
     def check_password(cls, username, password):
         user_mata_info = cls.query.filter_by(username=username).first()
-        return pbkdf2_sha256.verify(password, user_mata_info.password)
+        if user_mata_info:
+            return pbkdf2_sha256.verify(password, user_mata_info.password)
+        else:
+            return False

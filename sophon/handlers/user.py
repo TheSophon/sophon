@@ -11,8 +11,8 @@ class LoginHandler(BaseHandler):
         username, password = (
             self.get_argument("username"), self.get_argument("password")
         )
-        if UserMeta.check_password(username=username,
-                                   password=password):
+        if username and password and UserMeta.check_password(username=username,
+                                                             password=password):
             self.set_secure_cookie("username", username)
             query_data = UserMeta.query.filter_by(username=username).first()
             self.write({
