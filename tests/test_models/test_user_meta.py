@@ -30,7 +30,7 @@ class TestUserMeta(TestCase):
         )
 
     @mysql_fixture
-    def test_check_password(self, session):
+    def test_check_password_if_has_user(self, session):
         _insert_data = UserMeta(username="Bob", user_type=2,
                                 password="chkpasswd",
                                 public_key="/path/key2.pub")
@@ -40,5 +40,14 @@ class TestUserMeta(TestCase):
             UserMeta, "query", session.query_property()
         ) as _query:
             self.assertTrue(
+                UserMeta.check_password("Bob", "chkpasswd")
+            )
+
+    @mysql_fixture
+    def test_check_password_if_not_has_user(self, session):
+        with mock.patch.object(
+            UserMeta, "query", session.query_property()
+        ) as _query:
+            self.assertFalse(
                 UserMeta.check_password("Bob", "chkpasswd")
             )
