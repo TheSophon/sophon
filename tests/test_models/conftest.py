@@ -1,6 +1,8 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
+from functools import wraps
+
 from sqlalchemy.orm import scoped_session
 
 from sophon.database import db_session, engine, init_db
@@ -9,6 +11,7 @@ from sophon.database import db_session, engine, init_db
 def mysql_fixture(func):
     """Fixture for SQLAlchemy Session
     """
+    @wraps(func)
     def fixed_func(self, *args, **kwargs):
         init_db()
         connection = engine.connect()
