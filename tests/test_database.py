@@ -18,7 +18,7 @@ class TestDatabase(TestCase):
     def test_init_db(self):
         init_db()
         table_names = self.inspector.get_table_names()
-        self.assertListEqual(["user_meta"], table_names)
+        self.assertItemsEqual(["host_meta", "user_meta"], table_names)
 
     def test_drop_db(self):
         init_db()
