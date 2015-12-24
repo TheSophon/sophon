@@ -3,10 +3,12 @@
 
 from sophon.handlers.index import IndexHandler
 from sophon.handlers.user import GetUserInfoHandler, LoginHandler, LogoutHandler
+from sophon.handlers.host import HostStatusHandler
 
 URL_PATTERNS = [
     (r"/", IndexHandler),
     (r"/api/user/login", LoginHandler),
     (r"/api/user/logout", LogoutHandler),
-    (r"/api/user/info", GetUserInfoHandler)
+    (r"/api/user/info", GetUserInfoHandler),
+    (r"/api/host/status", HostStatusHandler)
 ]

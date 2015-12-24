@@ -4,6 +4,7 @@
 TORNADO_SETTINGS = {
     "cookie_secret": ".wwwpsgx.ktsy.o].b[jrdexye[bumys",
     "debug": True,
+    "login_url": "/api/user/info",
     "autoreload": True
 }
 
