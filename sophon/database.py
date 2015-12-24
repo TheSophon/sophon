@@ -20,4 +20,5 @@ def init_db():
 def drop_db():
     BaseModel.metadata.drop_all(bind=engine)
 
+from sophon.models import HostMeta  # pylint: disable=unused-import, wrong-import-position
 from sophon.models import UserMeta  # pylint: disable=unused-import, wrong-import-position
