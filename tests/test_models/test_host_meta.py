@@ -55,3 +55,41 @@ class TestHostMeta(TestCase):
                     "Disk Usage": [0, 0]
                 }
             })
+
+    @mysql_fixture
+    @mock.patch("sophon.models.host_meta.session")
+    def test_update_host_status(self, session, _session):
+        _commit = mock.Mock()
+        _session.commit = _commit
+
+        _insert_data = HostMeta(hostname="Marvin", ip="123.456.78.9")
+        session.add(_insert_data)
+
+        with mock.patch.object(
+            HostMeta, "query", session.query_property()
+        ) as _query:
+            HostMeta.update_host_status(
+                "123.456.78.9",
+                {
+                    "Hostname": "Marvin",
+                    "IP": "123.456.78.9",
+                    "Status": "Active",
+                    "CPU Load": 0.1,
+                    "Memory Usage": [2000, 5000],
+                    "Disk Usage": [20, 40]
+                }
+            )
+            _commit.called_once_with()
+            _query_data = session.query(HostMeta).filter_by(
+                hostname="Marvin"
+            ).first()
+            self.assertEqual(_query_data.status, json.dumps(
+                {
+                    "Hostname": "Marvin",
+                    "IP": "123.456.78.9",
+                    "Status": "Active",
+                    "CPU Load": 0.1,
+                    "Memory Usage": [2000, 5000],
+                    "Disk Usage": [20, 40]
+                }
+            ))
