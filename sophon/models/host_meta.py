@@ -6,7 +6,7 @@ import json
 from sqlalchemy import Column
 from sqlalchemy.types import Integer, String, Text
 
-from sophon.database import BaseModel
+from sophon.database import BaseModel, session
 
 
 class HostMeta(BaseModel):
@@ -42,3 +42,10 @@ class HostMeta(BaseModel):
             host.id: json.loads(host.status) for host in hosts
         }
         return status_list
+
+    @classmethod
+    def update_host_status(cls, ip, status):
+        host = cls.query.filter_by(ip=ip).first()
+        if host:
+            host.status = json.dumps(status)
+            session.commit()
