@@ -49,3 +49,15 @@ class HostMeta(BaseModel):
         if host:
             host.status = json.dumps(status)
             session.commit()
+
+    @classmethod
+    def get_host_process_status(cls, host_id):
+        host = cls.query.filter_by(id=host_id).first()
+        return json.loads(host.process_status) if host else {}
+
+    @classmethod
+    def update_host_process_status(cls, ip, process_status):
+        host = cls.query.filter_by(ip=ip).first()
+        if host:
+            host.process_status = json.dumps(process_status)
+            session.commit()
