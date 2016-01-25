@@ -33,8 +33,8 @@ class TestHostMeta(TestCase):
             }
         ))
 
-        self.assertEqual(_query_data.process_status, json.dumps({}))
-        self.assertEqual(_query_data.supervisor_status, json.dumps({}))
+        self.assertEqual(_query_data.process_status, json.dumps([]))
+        self.assertEqual(_query_data.supervisor_status, json.dumps([]))
 
     @mysql_fixture
     def test_get_all_hosts_status(self, session):
