@@ -32,8 +32,8 @@ class HostMeta(BaseModel):
                 "Disk Usage": (0, 0)
             }
         )
-        self.process_status = json.dumps({})
-        self.supervisor_status = json.dumps({})
+        self.process_status = json.dumps([])
+        self.supervisor_status = json.dumps([])
 
     @classmethod
     def get_all_hosts_status(cls):
