@@ -22,3 +22,4 @@ def drop_db():
 
 from sophon.models import HostMeta  # pylint: disable=unused-import, wrong-import-position
 from sophon.models import UserMeta  # pylint: disable=unused-import, wrong-import-position
+from sophon.models import SSHPermissionMeta  # pylint: disable=unused-import, wrong-import-position
