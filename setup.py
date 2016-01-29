@@ -23,6 +23,7 @@ setup(
     packages=find_packages(exclude=["tests"]),
     zip_safe=False,
     install_requires=[
+        "ansible >= 2.0.0.2, < 2.1.0.0",
         "MySQL-python >= 1.2.5, < 2.0.0",
         "passlib >= 1.6.5, < 2.0.0",
         "SQLAlchemy >= 1.0.9, < 2.0.0",
