@@ -2,6 +2,9 @@
 
 .coverage
 
+ansible.cfg
+hosts
+
 venv/
 build/
 dist/
