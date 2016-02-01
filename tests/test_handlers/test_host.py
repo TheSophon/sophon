@@ -8,7 +8,9 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from sophon.config import TORNADO_SETTINGS
-from sophon.handlers.host import HostStatusHandler, HostProcessStatusHandler
+from sophon.handlers.host import (
+    HostStatusHandler, HostProcessStatusHandler, HostDockerStatusHandler
+)
 
 
 class TestHostStatusHandler(AsyncHTTPTestCase):
@@ -20,7 +22,7 @@ class TestHostStatusHandler(AsyncHTTPTestCase):
         )
 
     @mock.patch("sophon.handlers.host.HostMeta")
-    def test_get_host_status(self, _HostMeta):
+    def test_get_all_hosts_status(self, _HostMeta):
         host_status = {
             "1": {
                 "Status": "Active",
@@ -87,3 +89,34 @@ class TestHostProcessStatusHandler(AsyncHTTPTestCase):
             self.assertEqual(response.code, 200)
             self.assertEqual(response_body, host_process_status)
             _HostMeta.get_host_process_status.called_once_with(1)
+
+
+class TestHostDockerStatusHandler(AsyncHTTPTestCase):
+
+    def get_app(self):
+        return tornado.web.Application(
+            [(r"/api/host/dockers_status", HostDockerStatusHandler)],
+            **TORNADO_SETTINGS
+        )
+
+    @mock.patch("sophon.handlers.host.HostMeta")
+    def test_get_all_hosts_docker_status(self, _HostMeta):
+        _docker_status = [
+            {
+                "Container ID": "4c01dxxb339c",
+                "Image": "ubuntu:12.04",
+            }
+        ]
+        _HostMeta.get_all_hosts_dockers_status.return_value = _docker_status
+
+        with mock.patch.object(
+            HostDockerStatusHandler, "get_secure_cookie"
+        ) as _get_secure_cookie:
+            _get_secure_cookie.return_value = "Alice"
+
+            response = self.fetch("/api/host/dockers_status")
+            response_body = json.loads(response.body)
+
+            self.assertEqual(response.code, 200)
+            self.assertEqual(response_body, _docker_status)
+            _HostMeta.get_all_hosts_dockers_status.called_once_with()
