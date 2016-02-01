@@ -23,3 +23,11 @@ class HostProcessStatusHandler(BaseHandler):
         self.write(
             json.dumps(HostMeta.get_host_process_status(host_id=host_id))
         )
+
+class HostDockerStatusHandler(BaseHandler):
+
+    @authenticated
+    def get(self):
+        self.write(
+            json.dumps(HostMeta.get_all_hosts_dockers_status())
+        )
