@@ -6,6 +6,7 @@ from sophon.handlers.user import GetUserInfoHandler, LoginHandler, LogoutHandler
 from sophon.handlers.host import (
     HostStatusHandler, HostProcessStatusHandler, HostDockerStatusHandler
 )
+from sophon.handlers.deploy import DeployHandler
 from sophon.handlers.ssh_permission import SSHPermissionHandler
 
 
@@ -17,5 +18,6 @@ URL_PATTERNS = [
     (r"/api/host/status", HostStatusHandler),
     (r"/api/host/(\d+)/process_status", HostProcessStatusHandler),
     (r"/api/host/ssh_permission", SSHPermissionHandler),
-    (r"/api/host/dockers_status", HostDockerStatusHandler)
+    (r"/api/host/dockers_status", HostDockerStatusHandler),
+    (r"/api/deploy", DeployHandler)
 ]

@@ -19,7 +19,7 @@ class TestDatabase(TestCase):
         init_db()
         table_names = self.inspector.get_table_names()
         self.assertItemsEqual(
-            ["host_meta", "user_meta", "ssh_permission_meta"],
+            ["host_meta", "deploy_meta", "user_meta", "ssh_permission_meta"],
             table_names
         )
 
