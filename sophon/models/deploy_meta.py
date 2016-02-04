@@ -9,12 +9,14 @@ from sqlalchemy.types import Integer, String, Text, PickleType
 from sophon.database import BaseModel, session
 
 
+# pylint: disable=too-many-instance-attributes
 class DeployMeta(BaseModel):
     __tablename__ = "deploy_meta"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
     taskname = Column(String(100), nullable=False)
     # 0: not finish, 1: successful deployment, 2: failed deployment
+    user_id = Column(Integer, nullable=False)
     status = Column(Integer, nullable=False)
     created = Column(Integer, nullable=False)
     repo_uri = Column(String(100), nullable=False)
@@ -22,8 +24,9 @@ class DeployMeta(BaseModel):
     hosts = Column(PickleType, nullable=False)
     msg = Column(Text, nullable=False)
 
-    def __init__(self, taskname, repo_uri, entry_point, hosts):
+    def __init__(self, taskname, user_id, repo_uri, entry_point, hosts):
         self.taskname = taskname
+        self.user_id = user_id
         self.status = 0
         self.created = int(time.time())
         self.repo_uri = repo_uri

@@ -15,6 +15,7 @@ class TestDeployMeta(TestCase):
     def test_insert(self, session):
         _insert_data = DeployMeta(
             taskname="sample_task",
+            user_id=42,
             repo_uri="git@github.com:user/repo.git",
             entry_point="sample",
             hosts=[1, 2]
@@ -23,6 +24,7 @@ class TestDeployMeta(TestCase):
 
         _query_data = session.query(DeployMeta).first()
         self.assertEqual(_query_data.taskname, "sample_task")
+        self.assertEqual(_query_data.user_id, 42)
         self.assertEqual(_query_data.status, 0)
         self.assertEqual(_query_data.repo_uri,
                          "git@github.com:user/repo.git")
@@ -37,6 +39,7 @@ class TestDeployMeta(TestCase):
         _session.commit = _commit
         _insert_data = DeployMeta(
             taskname="sample_task",
+            user_id=42,
             repo_uri="git@github.com:user/repo.git",
             entry_point="sample",
             hosts=[1, 2]
@@ -63,6 +66,7 @@ class TestDeployMeta(TestCase):
         _insert_data = DeployMeta(
             taskname="sample_task",
             repo_uri="git@github.com:user/repo.git",
+            user_id=42,
             entry_point="sample",
             hosts=[1, 2]
         )

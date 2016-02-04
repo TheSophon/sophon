@@ -18,3 +18,7 @@ class DeployHandler(BaseHandler):
                 result[key]["Created"]
             )
         self.write(result)
+
+    @authenticated
+    def post(self):
+        pass
