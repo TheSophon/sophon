@@ -16,6 +16,7 @@ class TestDeployMeta(TestCase):
         _insert_data = DeployMeta(
             taskname="sample_task",
             repo_uri="git@github.com:user/repo.git",
+            entry_point="sample",
             hosts=[1, 2]
         )
         session.add(_insert_data)
@@ -25,6 +26,7 @@ class TestDeployMeta(TestCase):
         self.assertEqual(_query_data.status, 0)
         self.assertEqual(_query_data.repo_uri,
                          "git@github.com:user/repo.git")
+        self.assertEqual(_query_data.entry_point, "sample")
         self.assertEqual(_query_data.hosts, [1, 2])
         self.assertEqual(_query_data.msg, u"")
 
@@ -36,6 +38,7 @@ class TestDeployMeta(TestCase):
         _insert_data = DeployMeta(
             taskname="sample_task",
             repo_uri="git@github.com:user/repo.git",
+            entry_point="sample",
             hosts=[1, 2]
         )
         session.add(_insert_data)
@@ -60,6 +63,7 @@ class TestDeployMeta(TestCase):
         _insert_data = DeployMeta(
             taskname="sample_task",
             repo_uri="git@github.com:user/repo.git",
+            entry_point="sample",
             hosts=[1, 2]
         )
         session.add(_insert_data)

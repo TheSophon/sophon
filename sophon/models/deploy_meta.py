@@ -18,14 +18,16 @@ class DeployMeta(BaseModel):
     status = Column(Integer, nullable=False)
     created = Column(Integer, nullable=False)
     repo_uri = Column(String(100), nullable=False)
+    entry_point = Column(String(100), nullable=False)
     hosts = Column(PickleType, nullable=False)
     msg = Column(Text, nullable=False)
 
-    def __init__(self, taskname, repo_uri, hosts):
+    def __init__(self, taskname, repo_uri, entry_point, hosts):
         self.taskname = taskname
         self.status = 0
         self.created = int(time.time())
         self.repo_uri = repo_uri
+        self.entry_point = entry_point
         self.hosts = hosts
         self.msg = u""
 
