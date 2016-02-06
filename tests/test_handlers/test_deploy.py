@@ -46,14 +46,18 @@ class TestIndexHandler(AsyncHTTPTestCase):
     @mock.patch("sophon.handlers.deploy.session")
     @mock.patch("sophon.handlers.deploy.UserMeta")
     @mock.patch("sophon.handlers.deploy.DeployMeta")
-    def test_new_deploy(self, _DeployMeta, _UserMeta, _session):
+    @mock.patch("sophon.handlers.deploy.created2str")
+    def test_new_deploy(self, _created2str, _DeployMeta, _UserMeta, _session):
         _filter_by, _first = mock.Mock(), mock.Mock()
         user_item, deploy_item = mock.Mock(), mock.Mock()
         user_item.id = 42
+        deploy_item.id, deploy_item.taskname = 66, "sampledeploy"
+        deploy_item.status, deploy_item.created = 0, 77
         _UserMeta.query.filter_by.return_value = _filter_by
         _filter_by.return_value = _first
         _first.return_value = user_item
         _DeployMeta.return_value = deploy_item
+        _created2str.return_value = "sampletime"
 
         with mock.patch.object(
             DeployHandler, "get_secure_cookie"
@@ -76,7 +80,17 @@ class TestIndexHandler(AsyncHTTPTestCase):
             )
 
             response_body = json.loads(response.body)
-            self.assertEqual(response_body, {"msg": "success"})
+            self.assertEqual(
+                response_body,
+                {
+                    "66": {
+                        "Taskname": "sampledeploy",
+                        "Status": 0,
+                        "Created": "sampletime"
+                    }
+                }
+            )
+            _created2str.called_once_with(created=78)
             _DeployMeta.called_once_with(taskname="sampledeploy", user_id=42,
                                          repo_uri="uri", entry_point="sample",
                                          hosts=[1, 2])
