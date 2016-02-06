@@ -8,14 +8,16 @@ import mock
 import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
-from sophon.handlers.deploy import DeployHandler
+from sophon.config import TORNADO_SETTINGS
+from sophon.handlers.deploy import DeployHandler, DeployDetailHandler
 
 
-class TestIndexHandler(AsyncHTTPTestCase):
+class TestDeployHandler(AsyncHTTPTestCase):
 
     def get_app(self):
         return tornado.web.Application(
-            [(r"/api/deploy", DeployHandler)]
+            [(r"/api/deploy", DeployHandler)],
+            **TORNADO_SETTINGS
         )
 
     @mock.patch("sophon.handlers.deploy.DeployMeta")
@@ -96,3 +98,38 @@ class TestIndexHandler(AsyncHTTPTestCase):
                                          hosts=[1, 2])
             _session.add.called_once_with(deploy_item)
             _session.commit.called_once_with()
+
+
+class TestDeployDetailHandler(AsyncHTTPTestCase):
+
+    def get_app(self):
+        return tornado.web.Application(
+            [(r"/api/deploy/(\d+)", DeployDetailHandler)],
+            **TORNADO_SETTINGS
+        )
+
+    @mock.patch("sophon.handlers.deploy.DeployMeta")
+    @mock.patch("sophon.handlers.deploy.created2str")
+    def test_get_deploy_detail(self, _created2str, _DeployMeta):
+        _DeployMeta.get_deploy_item_by_id.return_value = {
+            "Taskname": "sample_task",
+            "Created": 123
+        }
+        _created2str.return_value = 456
+
+        with mock.patch.object(
+            DeployDetailHandler, "get_secure_cookie"
+        ) as _get_secure_cookie:
+            _get_secure_cookie.return_value = "Alice"
+            response = self.fetch(r"/api/deploy/42")
+
+            response_body = json.loads(response.body)
+            self.assertEqual(
+                response_body,
+                {
+                    "Taskname": "sample_task",
+                    "Created": 456
+                }
+            )
+            _DeployMeta.get_deploy_item_by_id.called_once_with(deploy_id=12)
+            _created2str.called_once_with(created=123)
