@@ -38,4 +38,10 @@ class DeployHandler(BaseHandler):
         session.add(deploy_item)
         session.commit()
 
-        self.write({"msg": "success"})
+        self.write({
+            deploy_item.id: {
+                "Taskname": deploy_item.taskname,
+                "Status": deploy_item.status,
+                "Created": created2str(deploy_item.created)
+            }
+        })
