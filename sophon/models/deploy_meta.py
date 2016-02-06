@@ -54,3 +54,16 @@ class DeployMeta(BaseModel):
                 "Created": deploy_item.created
             }
         return summary
+
+    @classmethod
+    def get_deploy_item_by_id(cls, deploy_id):
+        deploy_item = cls.query.filter_by(id=deploy_id).first()
+        return {
+            "Taskname": deploy_item.taskname,
+            "Status": deploy_item.status,
+            "Created": deploy_item.created,
+            "Repo URI": deploy_item.repo_uri,
+            "Entry Point": deploy_item.entry_point,
+            "Hosts": deploy_item.hosts,
+            "Msg": deploy_item.msg
+        }
