@@ -45,3 +45,14 @@ class DeployHandler(BaseHandler):
                 "Created": created2str(deploy_item.created)
             }
         })
+
+
+class DeployDetailHandler(BaseHandler):
+
+    @authenticated
+    def get(self, deploy_id):
+        result = DeployMeta.get_deploy_item_by_id(deploy_id=deploy_id)
+        result.update({
+            "Created": created2str(result["Created"])
+        })
+        self.write(result)
