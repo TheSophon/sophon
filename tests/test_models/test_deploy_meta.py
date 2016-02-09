@@ -58,7 +58,7 @@ class TestDeployMeta(TestCase):
             ).first()
             self.assertEqual(_query_data.status, 1)
             self.assertEqual(_query_data.msg, u"placeholder")
-            _commit.called_once_with()
+            _commit.assert_called_once_with()
 
     @mysql_fixture
     @mock.patch("sophon.models.deploy_meta.session")

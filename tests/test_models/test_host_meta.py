@@ -79,7 +79,7 @@ class TestHostMeta(TestCase):
                     "Disk Usage": [20, 40]
                 }
             )
-            _commit.called_once_with()
+            _commit.assert_called_once_with()
             _query_data = session.query(HostMeta).filter_by(
                 hostname="Marvin"
             ).first()
