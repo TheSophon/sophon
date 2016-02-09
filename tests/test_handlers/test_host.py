@@ -45,7 +45,7 @@ class TestHostStatusHandler(AsyncHTTPTestCase):
 
             self.assertEqual(response.code, 200)
             self.assertEqual(response_body, host_status)
-            _HostMeta.get_all_hosts_status.called_once_with()
+            _HostMeta.get_all_hosts_status.assert_called_once_with()
 
 
 class TestHostProcessStatusHandler(AsyncHTTPTestCase):
@@ -88,7 +88,9 @@ class TestHostProcessStatusHandler(AsyncHTTPTestCase):
 
             self.assertEqual(response.code, 200)
             self.assertEqual(response_body, host_process_status)
-            _HostMeta.get_host_process_status.called_once_with(1)
+            _HostMeta.get_host_process_status.assert_called_once_with(
+                host_id=1
+            )
 
 
 class TestHostDockerStatusHandler(AsyncHTTPTestCase):
@@ -119,4 +121,4 @@ class TestHostDockerStatusHandler(AsyncHTTPTestCase):
 
             self.assertEqual(response.code, 200)
             self.assertEqual(response_body, _docker_status)
-            _HostMeta.get_all_hosts_dockers_status.called_once_with()
+            _HostMeta.get_all_hosts_dockers_status.assert_called_once_with()

@@ -21,9 +21,11 @@ class TestSSHPermissionHandler(AsyncHTTPTestCase):
     @mock.patch("sophon.handlers.ssh_permission.UserMeta")
     @mock.patch("sophon.handlers.ssh_permission.SSHPermissionMeta")
     def test_get_ssh_permissions(self, _SSHPermissionMeta, _UserMeta):
-        _user_item, _filter_by = mock.Mock(), mock.Mock()
+        _user_item, _filter_by, _first = mock.Mock(), mock.Mock(), mock.Mock()
         _UserMeta.query.filter_by.return_value = _filter_by
-        _filter_by.return_value, _user_item.id = _user_item, 42
+        _filter_by.first.return_value, _user_item.id = (
+            _user_item, 42
+        )
         ssh_permissions = {
             1: {
                 "Hostname": "GLaDos",
@@ -53,7 +55,12 @@ class TestSSHPermissionHandler(AsyncHTTPTestCase):
                 response_body,
                 {str(key): val for key, val in ssh_permissions.items()}
             )
-            _SSHPermissionMeta.get_ssh_permission_by_user_id.called_once_with(
+            _UserMeta.query.filter_by.assert_called_once_with(username="Alice")
+            _filter_by.first.assert_called_once_with()
+            _get_ssh_permission_by_user_id = (
+                _SSHPermissionMeta.get_ssh_permission_by_user_id
+            )
+            _get_ssh_permission_by_user_id.assert_called_once_with(
                 user_id=42
             )
 
@@ -95,15 +102,15 @@ class TestSSHPermissionHandler(AsyncHTTPTestCase):
             )
             response_body = json.loads(response.body)
 
-            _SSHPermissionMeta.called_once_with(
+            _SSHPermissionMeta.assert_called_once_with(
                 user_id=42, host_id=24
             )
-            _HostMeta.get_all_hosts_status.called_once_with()
-            _session.add.called_once_with(_ssh_permission_item)
-            _session.commit.called_once_with()
+            _HostMeta.get_all_hosts_status.assert_called_once_with()
+            _session.add.assert_called_once_with(_ssh_permission_item)
+            _session.commit.assert_called_once_with()
             self.assertEqual(response.code, 200)
             self.assertEqual(response_body, {"msg": "success"})
-            _subprocess.call.called_once_with(
+            _subprocess.call.assert_called_once_with(
                 "cat /path/key.pub | ssh root@123.456.78.9" +
                 " \'cat >> ~/.ssh/authorized_keys\'"
                 , shell=True

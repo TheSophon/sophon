@@ -47,10 +47,10 @@ class TestLoginHandler(AsyncHTTPTestCase):
                               body=post_body)
         response_body = json.loads(response.body)
 
-        _check_password.called_once_with(username="Alice",
-                                         password="notgoodpasswd")
-        _filter_by.called_once_with(username="Alice")
-        _first.called_once_with()
+        _check_password.assert_called_once_with(username="Alice",
+                                                password="notgoodpasswd")
+        _filter_by.assert_called_once_with(username="Alice")
+        _first.assert_called_once_with()
         self.assertEqual(response.code, 200)
         self.assertEqual(
             response_body,
@@ -95,7 +95,7 @@ class TestLogoutHandler(AsyncHTTPTestCase):
 
             self.assertEqual(response.code, 200)
             self.assertEqual(response_body, {})
-            _clear_cookie.called_once_with("username")
+            _clear_cookie.assert_called_once_with("username")
 
 class TestGetUserInfoHandler(AsyncHTTPTestCase):
 
@@ -134,9 +134,9 @@ class TestGetUserInfoHandler(AsyncHTTPTestCase):
             response = self.fetch(r"/api/user/info")
             response_body = json.loads(response.body)
 
-            _get_secure_cookie.called_once_with("username")
-            _filter_by.called_once_with(username="Alice")
-            _first.called_once_with()
+            _get_secure_cookie.assert_called_once_with("username")
+            _filter_by.assert_called_once_with(username="Alice")
+            _first.assert_called_once_with()
             self.assertEqual(response.code, 200)
             self.assertEqual(
                 response_body,

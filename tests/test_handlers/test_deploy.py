@@ -42,22 +42,24 @@ class TestDeployHandler(AsyncHTTPTestCase):
             response_body = json.loads(response.body)
 
             _summary["1"]["Created"] = 345
-            _created2str.called_once_with(123)
+            _created2str.assert_called_once_with(123)
             self.assertEqual(response_body, _summary)
 
     @mock.patch("sophon.handlers.deploy.session")
+    @mock.patch("sophon.handlers.deploy.do_deploy")
     @mock.patch("sophon.handlers.deploy.UserMeta")
     @mock.patch("sophon.handlers.deploy.DeployMeta")
     @mock.patch("sophon.handlers.deploy.created2str")
-    def test_new_deploy(self, _created2str, _DeployMeta, _UserMeta, _session):
-        _filter_by, _first = mock.Mock(), mock.Mock()
-        user_item, deploy_item = mock.Mock(), mock.Mock()
+    def test_new_deploy(self, _created2str, _DeployMeta, _UserMeta,
+                        _do_deploy, _session):
+        _filter_by, user_item, deploy_item = (
+            mock.Mock(), mock.Mock(), mock.Mock()
+        )
         user_item.id = 42
         deploy_item.id, deploy_item.taskname = 66, "sampledeploy"
         deploy_item.status, deploy_item.created = 0, 77
         _UserMeta.query.filter_by.return_value = _filter_by
-        _filter_by.return_value = _first
-        _first.return_value = user_item
+        _filter_by.first.return_value = user_item
         _DeployMeta.return_value = deploy_item
         _created2str.return_value = "sampletime"
 
@@ -92,12 +94,17 @@ class TestDeployHandler(AsyncHTTPTestCase):
                     }
                 }
             )
-            _created2str.called_once_with(created=78)
-            _DeployMeta.called_once_with(taskname="sampledeploy", user_id=42,
-                                         repo_uri="uri", entry_point="sample",
-                                         hosts=[1, 2])
-            _session.add.called_once_with(deploy_item)
-            _session.commit.called_once_with()
+            _created2str.assert_called_once_with(created=77)
+            _DeployMeta.assert_called_once_with(taskname="sampledeploy",
+                                                user_id=42,
+                                                repo_uri="uri",
+                                                entry_point="sample",
+                                                hosts=[1, 2])
+            _session.add.assert_called_once_with(deploy_item)
+            _session.commit.assert_called_once_with()
+            _do_deploy.assert_called_once_with(deploy_id=66, user="root",
+                                               entry_point="sample",
+                                               hosts=[1, 2], repo_uri="uri")
 
 
 class TestDeployDetailHandler(AsyncHTTPTestCase):
@@ -131,5 +138,7 @@ class TestDeployDetailHandler(AsyncHTTPTestCase):
                     "Created": 456
                 }
             )
-            _DeployMeta.get_deploy_item_by_id.called_once_with(deploy_id=12)
-            _created2str.called_once_with(created=123)
+            _DeployMeta.get_deploy_item_by_id.assert_called_once_with(
+                deploy_id=42
+            )
+            _created2str.assert_called_once_with(created=123)

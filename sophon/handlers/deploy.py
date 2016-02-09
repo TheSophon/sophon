@@ -9,6 +9,7 @@ from sophon.database import session
 from sophon.handlers import BaseHandler
 from sophon.models import DeployMeta, UserMeta
 from sophon.utils.time_convertor import created2str
+from sophon.utils.deploy import do_deploy
 
 
 class DeployHandler(BaseHandler):
@@ -38,11 +39,15 @@ class DeployHandler(BaseHandler):
         session.add(deploy_item)
         session.commit()
 
+        do_deploy(deploy_id=deploy_item.id,
+                  entry_point=entry_point, user="root",
+                  hosts=hosts, repo_uri=repo_uri)
+
         self.write({
             deploy_item.id: {
                 "Taskname": deploy_item.taskname,
                 "Status": deploy_item.status,
-                "Created": created2str(deploy_item.created)
+                "Created": created2str(created=deploy_item.created)
             }
         })
 
@@ -51,8 +56,8 @@ class DeployDetailHandler(BaseHandler):
 
     @authenticated
     def get(self, deploy_id):
-        result = DeployMeta.get_deploy_item_by_id(deploy_id=deploy_id)
+        result = DeployMeta.get_deploy_item_by_id(deploy_id=int(deploy_id))
         result.update({
-            "Created": created2str(result["Created"])
+            "Created": created2str(created=result["Created"])
         })
         self.write(result)
