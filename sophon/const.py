@@ -39,3 +39,10 @@ DEPLOY_TEMPLATE_PART_TASK = """
     - name: restart app
       action: supervisorctl name={{app_name}} state=restarted
 """
+
+SSH_CONFIG_TEMPLATE = """
+Host {ip}
+IdentitiesOnly yes
+StrictHostKeyChecking no
+IdentityFile {key_filename}
+"""
