@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import urllib
 
 import mock
 import tornado.web
@@ -9,7 +10,8 @@ from tornado.testing import AsyncHTTPTestCase
 
 from sophon.config import TORNADO_SETTINGS
 from sophon.handlers.host import (
-    HostStatusHandler, HostProcessStatusHandler, HostDockerStatusHandler
+    HostHandler, HostStatusHandler,
+    HostProcessStatusHandler, HostDockerStatusHandler
 )
 
 
@@ -122,3 +124,47 @@ class TestHostDockerStatusHandler(AsyncHTTPTestCase):
             self.assertEqual(response.code, 200)
             self.assertEqual(response_body, _docker_status)
             _HostMeta.get_all_hosts_dockers_status.assert_called_once_with()
+
+
+class TestHostHandler(AsyncHTTPTestCase):
+
+    def get_app(self):
+        return tornado.web.Application(
+            [(r"/api/host", HostHandler)],
+            **TORNADO_SETTINGS
+        )
+
+    @mock.patch("sophon.handlers.host.session")
+    @mock.patch("sophon.handlers.host.HostMeta")
+    @mock.patch("sophon.handlers.host.new_host")
+    def test_post_new_host(self, _new_host, _HostMeta, _session):
+        with mock.patch.object(
+            HostHandler, "get_secure_cookie"
+        ) as _get_secure_cookie:
+            _get_secure_cookie.return_value = "Alice"
+
+            request_body = {
+                "ip": "123.456.78.9",
+                "hostname": "testhost",
+                "ssh_secret_key": "sample_secret_key"
+            }
+            response = self.fetch(
+                r"/api/host",
+                method="POST",
+                body=urllib.urlencode(request_body),
+                headers={
+                    "Content-Type": "application/x-www-form-urlencoded"
+                }
+            )
+
+            response_body = json.loads(response.body)
+            _new_host.assert_called_once_with(
+                ip="123.456.78.9", ssh_secret_key="sample_secret_key"
+            )
+            _HostMeta.assert_called_once_with(
+                hostname="testhost", ip="123.456.78.9"
+            )
+            _session.add.assert_called_once_with(_HostMeta.return_value)
+            _session.commit.assert_called_once_with()
+            self.assertEqual(response.code, 200)
+            self.assertEqual(response_body, {"msg": "success"})
