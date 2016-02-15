@@ -134,10 +134,15 @@ class TestHostHandler(AsyncHTTPTestCase):
             **TORNADO_SETTINGS
         )
 
+    @mock.patch("sophon.handlers.host.json")
     @mock.patch("sophon.handlers.host.session")
     @mock.patch("sophon.handlers.host.HostMeta")
     @mock.patch("sophon.handlers.host.new_host")
-    def test_post_new_host(self, _new_host, _HostMeta, _session):
+    def test_post_new_host(self, _new_host, _HostMeta, _session, _json):
+        _HostMeta.return_value.id = 1
+        _HostMeta.return_value.status = json.dumps({"sample": "_sample"})
+        _json.loads.return_value = {"sample": "_sample"}
+
         with mock.patch.object(
             HostHandler, "get_secure_cookie"
         ) as _get_secure_cookie:
@@ -166,5 +171,15 @@ class TestHostHandler(AsyncHTTPTestCase):
             )
             _session.add.assert_called_once_with(_HostMeta.return_value)
             _session.commit.assert_called_once_with()
+            _json.loads.assert_called_once_with(
+                json.dumps(
+                    {"sample": "_sample"}
+                )
+            )
             self.assertEqual(response.code, 200)
-            self.assertEqual(response_body, {"msg": "success"})
+            self.assertEqual(
+                response_body,
+                {
+                    "1": {"sample": "_sample"}
+                }
+            )
