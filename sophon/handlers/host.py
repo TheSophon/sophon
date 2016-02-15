@@ -50,4 +50,6 @@ class HostHandler(BaseHandler):
         session.add(_host_item)
         session.commit()
 
-        self.write({"msg": "success"})
+        self.write({
+            _host_item.id: json.loads(_host_item.status)
+        })
