@@ -19,15 +19,13 @@ def get_host_status(ip):
     }
     cpu = "ansible {0} -a \"{1}\"".format(ip, command["cpu"])
     disk = "ansible {0} -a \"{1}\"".format(ip, command["disk"])
-    _cpu_result = subprocess.Popen(
+    cpu_result = subprocess.Popen(
         cpu, shell=True, stdout=subprocess.PIPE
-    ).stdout.read()
-    _disk_result = subprocess.Popen(
+    ).stdout.read().split()
+    disk_result = subprocess.Popen(
         disk, shell=True, stdout=subprocess.PIPE
-    ).stdout.read()
-    cpu_result = _cpu_result.split()
-    disk_result = _disk_result.split()
-    if "top" in _cpu_result:
+    ).stdout.read().split()
+    if "top" in "".join(cpu_result):
         cpu_index = cpu_result.index("average:")
         mem_index = cpu_result.index("Mem:")
         disk_index = disk_result.index("/")
