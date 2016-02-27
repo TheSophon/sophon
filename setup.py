@@ -27,12 +27,14 @@ setup(
         "MySQL-python >= 1.2.5, < 2.0.0",
         "passlib >= 1.6.5, < 2.0.0",
         "SQLAlchemy >= 1.0.9, < 2.0.0",
+        "schedule >= 0.3.2, < 1.0.0",
         "tornado >= 4.3, < 5.0"
     ] + tests_requirements,
     tests_require=tests_requirements,
     entry_points={
         "console_scripts": [
-            "sophon = sophon.app:main"
+            "sophon = sophon.app:main",
+            "sophon-cron = sophon.scripts.cron_tasks:cron_tasks"
         ],
     },
 )
