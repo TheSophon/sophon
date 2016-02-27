@@ -9,3 +9,5 @@ TORNADO_SETTINGS = {
 }
 
 SQLALCHEMY_DATABASE_URI = "mysql://root:@localhost/sophon?charset=utf8"
+
+SCHEDULER_JOB_PERIOD = 2
