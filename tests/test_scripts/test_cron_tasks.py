@@ -48,6 +48,8 @@ class TestCronTasks(TestCase):
     @mock.patch("sophon.scripts.cron_tasks.SCHEDULER_JOB_PERIOD", 3)
     def test_cron_tasks(self, _cron_get_host_status, _schedule,
                         _init_db, _time):
+        _schedule.run_pending.side_effect = [None, "something"]
+
         cron_tasks()
 
         _init_db.assert_called_once_with()
@@ -55,4 +57,4 @@ class TestCronTasks(TestCase):
         _schedule.every.return_value.minutes.do.assert_called_once_with(
             _cron_get_host_status
         )
-        self.assertEqual(_time.sleep.call_count, 0)
+        _time.sleep.assert_called_once_with(1)
