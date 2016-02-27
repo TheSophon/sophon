@@ -38,6 +38,7 @@ class DeployHandler(BaseHandler):
                                  hosts=hosts)
         session.add(deploy_item)
         session.commit()
+        session.close()
 
         do_deploy(deploy_id=deploy_item.id,
                   entry_point=entry_point, user="root",

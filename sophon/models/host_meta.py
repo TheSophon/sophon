@@ -38,6 +38,7 @@ class HostMeta(BaseModel):
     @classmethod
     def get_all_hosts_status(cls):
         hosts = cls.query.all()
+        session.close()
         status_list = {
             host.id: json.loads(host.status) for host in hosts
         }
@@ -46,6 +47,7 @@ class HostMeta(BaseModel):
     @classmethod
     def update_host_status(cls, ip, status):
         host = cls.query.filter_by(ip=ip).first()
+        session.close()
         if host:
             host.status = json.dumps(status)
             session.commit()
@@ -53,6 +55,7 @@ class HostMeta(BaseModel):
     @classmethod
     def get_host_process_status(cls, host_id):
         host = cls.query.filter_by(id=host_id).first()
+        session.close()
         return json.loads(host.process_status) if host else {}
 
     @classmethod
@@ -61,10 +64,12 @@ class HostMeta(BaseModel):
         if host:
             host.process_status = json.dumps(process_status)
             session.commit()
+        session.close()
 
     @classmethod
     def get_all_hosts_dockers_status(cls):
         hosts = cls.query.all()
+        session.close()
         result = []
         for host in hosts:
             for docker_status in json.loads(host.dockers_status):
@@ -82,3 +87,4 @@ class HostMeta(BaseModel):
         if host:
             host.dockers_status = json.dumps(dockers_status)
             session.commit()
+        session.close()

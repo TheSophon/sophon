@@ -24,6 +24,7 @@ def mysql_fixture(func):
             func(self, *fixed_args, **kwargs)
         finally:
             session.remove()
+            session.close()
             transaction.rollback()
             connection.close()
 

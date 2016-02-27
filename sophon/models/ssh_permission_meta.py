@@ -4,7 +4,7 @@
 from sqlalchemy import Column
 from sqlalchemy.types import Integer
 
-from sophon.database import BaseModel
+from sophon.database import BaseModel, session
 from sophon.models import HostMeta
 
 
@@ -22,6 +22,7 @@ class SSHPermissionMeta(BaseModel):
     @classmethod
     def get_ssh_permission_by_user_id(cls, user_id):
         all_hosts_status = HostMeta.get_all_hosts_status()
+        session.close()
         hosts_has_permission = set([
             item.host_id for item in cls.query.filter_by(user_id=user_id).all()
         ])
