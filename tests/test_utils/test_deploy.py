@@ -15,7 +15,7 @@ class TestDeploy(TestCase):
     def test_deploy(self, _DeloyMeta, _os):
         _popen = mock.Mock()
         _os.Popen.return_value, _popen.stdout.read.return_value = (
-            _popen, "samplemsg"
+            _popen, "samplemsgfailed=0"
         )
 
         deploy(deploy_id=1, entry_point="sample", user="root",
@@ -26,7 +26,7 @@ class TestDeploy(TestCase):
         _DeloyMeta.update_deploy_meta.assert_called_once_with(
             deploy_id=1,
             status=1,
-            msg="samplemsg"
+            msg="samplemsgfailed=0"
         )
 
     @mock.patch("sophon.utils.deploy.deploy")
