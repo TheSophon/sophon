@@ -36,6 +36,7 @@ class SSHPermissionHandler(BaseHandler):
             )
             session.add(ssh_permission_item)
             session.commit()
+            session.close()
 
             print public_key_path, user_id
 

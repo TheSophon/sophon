@@ -49,6 +49,8 @@ class HostHandler(BaseHandler):
         _host_item = HostMeta(hostname=hostname, ip=ip)
         session.add(_host_item)
         session.commit()
+        session.close()
+
 
         self.write({
             _host_item.id: json.loads(_host_item.status)

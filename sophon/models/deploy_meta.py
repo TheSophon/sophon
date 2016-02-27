@@ -42,10 +42,12 @@ class DeployMeta(BaseModel):
             deploy_item.msg = msg
             session.add(deploy_item)
             session.commit()
+            session.close()
 
     @classmethod
     def get_all_deploy_summary(cls):
         deploy_items = cls.query.all()
+        session.close()
         summary = dict()
         for deploy_item in deploy_items:
             summary[deploy_item.id] = {
@@ -58,6 +60,7 @@ class DeployMeta(BaseModel):
     @classmethod
     def get_deploy_item_by_id(cls, deploy_id):
         deploy_item = cls.query.filter_by(id=deploy_id).first()
+        session.close()
         return {
             "Taskname": deploy_item.taskname,
             "Status": deploy_item.status,

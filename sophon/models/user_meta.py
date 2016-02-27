@@ -7,7 +7,7 @@ from passlib.hash import pbkdf2_sha256  # pylint: disable=no-name-in-module
 from sqlalchemy import Column
 from sqlalchemy.types import Integer, SmallInteger, String
 
-from sophon.database import BaseModel
+from sophon.database import BaseModel, session
 
 
 class UserMeta(BaseModel):
@@ -31,6 +31,7 @@ class UserMeta(BaseModel):
     @classmethod
     def check_password(cls, username, password):
         user_mata_info = cls.query.filter_by(username=username).first()
+        session.close()
         if user_mata_info:
             return pbkdf2_sha256.verify(password, user_mata_info.password)
         else:
