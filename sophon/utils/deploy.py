@@ -26,7 +26,7 @@ def deploy(deploy_id, entry_point, user, hosts_ip, repo_uri):
             shell=True,
             stdout=subprocess.PIPE
         ).stdout.read()
-        status = 1 if "FAILED=0" in msg.upper() else 2
+        status = 2 if "FAILED!" in msg.upper() else 1
         DeployMeta.update_deploy_meta(deploy_id=deploy_id,
                                       status=status, msg=msg)
 

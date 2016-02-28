@@ -26,16 +26,7 @@ DEPLOY_TEMPLATE_PART_TASK = """
 
     - name: add supervisor config
       action: file src={{webapps_dir}}/{{app_name}}/deploy/{{app_name}}.conf dest=/etc/supervisor/conf.d/{{app_name}}.conf state=link
-      notify:
-        - restart app
 
-    - name: reload supervisor
-      action: command supervisorctl reload
-    
-    - name: start app
-      action: supervisorctl name={{app_name}} state=started
-
-  handlers:
     - name: restart app
       action: supervisorctl name={{app_name}} state=restarted
 """
