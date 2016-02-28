@@ -47,10 +47,10 @@ class HostMeta(BaseModel):
     @classmethod
     def update_host_status(cls, ip, status):
         host = cls.query.filter_by(ip=ip).first()
-        session.close()
         if host:
             host.status = json.dumps(status)
             session.commit()
+        session.close()
 
     @classmethod
     def get_host_process_status(cls, host_id):

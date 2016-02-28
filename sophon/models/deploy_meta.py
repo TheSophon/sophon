@@ -42,7 +42,7 @@ class DeployMeta(BaseModel):
             deploy_item.msg = msg
             session.add(deploy_item)
             session.commit()
-            session.close()
+        session.close()
 
     @classmethod
     def get_all_deploy_summary(cls):
