@@ -5,7 +5,7 @@ from unittest import TestCase
 
 import mock
 
-from sophon.utils.status import get_host_status
+from sophon.utils.status import get_host_status, get_host_process_status
 
 
 class TestGetHostStatus(TestCase):
@@ -84,3 +84,91 @@ Filesystem      Size  Used Avail Use% Mounted on
             }
         )
 
+
+class TestGetHostProcessStatus(TestCase):
+
+    @mock.patch("sophon.utils.status.subprocess")
+    def test_get_host_process_status_with_server_available(self, _subprocess):
+        _subprocess.Popen.return_value.stdout.read.return_value = (
+            """
+Tasks:  78 total,   1 running,  76 sleeping,   0 stopped,   1 zombie
+%Cpu(s):  1.6 us,  0.5 sy,  0.0 ni, 96.3 id,  1.7 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem:   1031916 total,   246824 used,   785092 free,    19372 buffers
+KiB Swap:  2097148 total,        0 used,  2097148 free.    99460 cached Mem
+
+PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND
+1 root      20   0    5188   3844   2948 S  0.0  0.4   0:00.67 systemd
+2 root      20   0       0      0      0 S  0.0  0.0   0:00.00 kthreadd
+3 root      20   0       0      0      0 S  0.0  0.0   0:00.06 ksoftirqd/0
+5 root       0 -20       0      0      0 S  0.0  0.0   0:00.00 kworker/0:0H
+6 root      20   0       0      0      0 S  0.0  0.0   0:00.00 kworker/u2:0
+7 root      20   0       0      0      0 S  0.0  0.0   0:00.14 rcu_sched
+            """
+        )
+
+        result = get_host_process_status("123.123.123.123")
+
+        _subprocess.Popen.assert_called_once_with(
+            "ansible 123.123.123.123 -a \"top -b -n 1\"",
+            shell=True,
+            stdout=_subprocess.PIPE
+        )
+        self.assertListEqual(
+            result,
+            [
+                {
+                    "Memory Usage": 0.4,
+                    "CPU Usage": 0.0,
+                    "Command": "systemd",
+                    "PID": 1,
+                    "User": "root",
+                    "Time": "0:00.67"
+                },
+                {
+                    "Memory Usage": 0.0,
+                    "CPU Usage": 0.0,
+                    "Command": "kthreadd",
+                    "PID": 2,
+                    "User": "root",
+                    "Time": "0:00.00"
+                },
+                {
+                    "Memory Usage": 0.0,
+                    "CPU Usage": 0.0,
+                    "Command": "ksoftirqd/0",
+                    "PID": 3,
+                    "User": "root",
+                    "Time": "0:00.06"
+                },
+                {
+                    "Memory Usage": 0.0,
+                    "CPU Usage": 0.0,
+                    "Command": "kworker/0:0H",
+                    "PID": 5,
+                    "User": "root",
+                    "Time": "0:00.00"
+                },
+                {
+                    "Memory Usage": 0.0,
+                    "CPU Usage": 0.0,
+                    "Command": "kworker/u2:0",
+                    "PID": 6,
+                    "User": "root",
+                    "Time": "0:00.00"
+                }
+            ]
+        )
+
+
+    @mock.patch("sophon.utils.status.subprocess")
+    def test_get_host_process_status_with_server_outage(self, _subprocess):
+        _subprocess.Popen.return_value.stdout.read.return_value = ""
+
+        result = get_host_process_status("123.123.123.123")
+
+        _subprocess.Popen.assert_called_once_with(
+            "ansible 123.123.123.123 -a \"top -b -n 1\"",
+            shell=True,
+            stdout=_subprocess.PIPE
+        )
+        self.assertListEqual(result, [])
