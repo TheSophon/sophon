@@ -1,7 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 
-import copy
 import subprocess
 
 
@@ -47,28 +46,21 @@ def get_host_status(ip):
 
 
 def get_host_process_status(ip):
-    ret = {
-        "PID": 0,
-        "User": "none",
-        "Memory Usage": 0.0,
-        "CPU Usage": 0.0,
-        "Time": "0:00.00",
-        "Command": "sample"
-    }
     process = "ansible {0} -a \"{1}\"".format(ip, command["process"])
     process_result = subprocess.Popen(
         process, shell=True, stdout=subprocess.PIPE
     ).stdout.read().split()
-    result = list()
+    result = []
     if "COMMAND" in "".join(process_result):
         process_index = process_result.index("COMMAND")
         for x in range(0, 5):
-            ret_temp = copy.deepcopy(ret)
             new_index = process_index + 12 * x
-            ret_temp["PID"] = process_result[new_index + 1]
-            ret_temp["User"] = process_result[new_index + 2]
-            ret_temp["Memory Usage"] = process_result[new_index + 10]
-            ret_temp["Time"] = process_result[new_index + 11]
-            ret_temp["Command"] = process_result[new_index + 12]
-            result.append(ret_temp)
+            result.append({
+                "PID": int(process_result[new_index + 1]),
+                "User": process_result[new_index + 2],
+                "CPU Usage": float(process_result[new_index + 9]),
+                "Memory Usage": float(process_result[new_index + 10]),
+                "Time": process_result[new_index + 11],
+                "Command": process_result[new_index + 12]
+            })
     return result
