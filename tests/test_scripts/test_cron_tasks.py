@@ -7,7 +7,8 @@ import mock
 
 from sophon.scripts.cron_tasks import (
     cron_tasks,
-    cron_get_host_status
+    cron_get_host_status,
+    cron_get_host_process_status
 )
 
 
@@ -39,22 +40,55 @@ class TestCronGetHosttStatus(TestCase):
         )
 
 
+class TestCronGetHostProcessStatus(TestCase):
+
+    @mock.patch("sophon.scripts.cron_tasks.HostMeta")
+    @mock.patch("sophon.scripts.cron_tasks.get_host_process_status")
+    def test_cron_get_host_process_status(self,
+                                          _get_host_process_status,
+                                          _HostMeta):
+        _HostMeta.get_all_hosts_status.return_value = {
+            1: {
+                "Hostname": "Orion",
+                "IP": "123.123.123.123",
+            }
+        }
+        _get_host_process_status.return_value = [{"sample": "status"}]
+
+        cron_get_host_process_status()
+
+        _HostMeta.get_all_hosts_status.assert_called_once_with()
+        _HostMeta.update_host_process_status.assert_called_once_with(
+            ip="123.123.123.123",
+            process_status=[{"sample": "status"}]
+        )
+
+
 class TestCronTasks(TestCase):
 
     @mock.patch("sophon.scripts.cron_tasks.time")
     @mock.patch("sophon.scripts.cron_tasks.init_db")
     @mock.patch("sophon.scripts.cron_tasks.schedule")
     @mock.patch("sophon.scripts.cron_tasks.cron_get_host_status")
+    @mock.patch("sophon.scripts.cron_tasks.cron_get_host_process_status")
     @mock.patch("sophon.scripts.cron_tasks.SCHEDULER_JOB_PERIOD", 3)
-    def test_cron_tasks(self, _cron_get_host_status, _schedule,
+    def test_cron_tasks(self, _cron_get_host_process_status,
+                        _cron_get_host_status, _schedule,
                         _init_db, _time):
         _schedule.run_pending.side_effect = [None, "something"]
 
         cron_tasks()
 
         _init_db.assert_called_once_with()
-        _schedule.every.assert_called_once_with(3)
-        _schedule.every.return_value.minutes.do.assert_called_once_with(
-            _cron_get_host_status
+        self.assertEqual(
+            _schedule.every.call_args_list,
+            [mock.call(3), mock.call(3)]
+        )
+        self.assertEqual(
+            _schedule.every.return_value.minutes.do.call_args_list,
+            [
+                mock.call(_cron_get_host_status),
+                mock.call(_cron_get_host_process_status)
+            ]
         )
         _time.sleep.assert_called_once_with(1)
