@@ -9,7 +9,12 @@ import tornado.web
 from tornado.testing import AsyncHTTPTestCase
 
 from sophon.config import TORNADO_SETTINGS
-from sophon.handlers.user import GetUserInfoHandler, LoginHandler, LogoutHandler
+from sophon.handlers.user import (
+    LoginHandler,
+    LogoutHandler,
+    GetUserInfoHandler,
+    UserRegisterHandler
+)
 
 
 class TestLoginHandler(AsyncHTTPTestCase):
@@ -148,3 +153,72 @@ class TestGetUserInfoHandler(AsyncHTTPTestCase):
             )
 
 
+class TestUserRegisterHandler(AsyncHTTPTestCase):
+
+    def get_app(self):
+        return tornado.web.Application(
+            [(r"/api/user/reg", UserRegisterHandler)],
+            **TORNADO_SETTINGS
+        )
+
+    @mock.patch("sophon.handlers.user.UserMeta")
+    @mock.patch("sophon.handlers.user.new_user_public_key")
+    def test_reg_user_with_normal_user(self, _new_user_public_key, _UserMeta):
+        _UserMeta.query.filter_by.return_value.first.return_value.user_type = 2
+
+        with mock.patch.object(
+            UserRegisterHandler, "get_secure_cookie"
+        ) as _get_secure_cookie:
+            _get_secure_cookie.return_value = "Admin"
+
+            post_data = {
+                "username": "Alice",
+                "password": "notgoodpasswd",
+                "type": 1,
+                "public_key": "notgoodpublickey"
+            }
+            post_body = urllib.urlencode(post_data)
+            response = self.fetch(r"/api/user/reg",
+                                  method="POST",
+                                  body=post_body)
+
+            _UserMeta.query.filter_by.assert_called_once_with(username="Admin")
+            self.assertEqual(response.code, 403)
+            self.assertEqual(_new_user_public_key.call_count, 0)
+
+    @mock.patch("sophon.handlers.user.session")
+    @mock.patch("sophon.handlers.user.UserMeta")
+    @mock.patch("sophon.handlers.user.new_user_public_key")
+    def test_reg_user_with_super_user(self, _new_user_public_key,
+                                      _UserMeta, _session):
+        _UserMeta.query.filter_by.return_value.first.return_value.user_type = 1
+        _new_user_public_key.return_value = "/home/user/.ssh/public_key.pub"
+
+        with mock.patch.object(
+            UserRegisterHandler, "get_secure_cookie"
+        ) as _get_secure_cookie:
+            _get_secure_cookie.return_value = "Admin"
+
+            post_data = {
+                "username": "Alice",
+                "password": "notgoodpasswd",
+                "type": 1,
+                "public_key": "notgoodpublickey"
+            }
+            post_body = urllib.urlencode(post_data)
+            response = self.fetch(r"/api/user/reg",
+                                  method="POST",
+                                  body=post_body)
+            response_body = json.loads(response.body)
+
+            self.assertEqual(response.code, 200)
+            _new_user_public_key.assert_called_once_with("notgoodpublickey")
+            _UserMeta.assert_called_once_with(
+                username="Alice", user_type=1,
+                password="notgoodpasswd",
+                public_key="/home/user/.ssh/public_key.pub"
+            )
+            _session.add.assert_called_once_with(_UserMeta.return_value)
+            _session.commit.assert_called_once_with()
+            _session.close.assert_called_once_with()
+            self.assertEqual(response_body, {"msg": "success"})
