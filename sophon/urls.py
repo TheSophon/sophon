@@ -2,7 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from sophon.handlers.index import IndexHandler
-from sophon.handlers.user import GetUserInfoHandler, LoginHandler, LogoutHandler
+from sophon.handlers.user import (
+    LoginHandler,
+    LogoutHandler,
+    GetUserInfoHandler,
+    UserRegisterHandler
+)
 from sophon.handlers.host import (
     HostHandler, HostStatusHandler,
     HostProcessStatusHandler, HostDockerStatusHandler
@@ -15,6 +20,7 @@ URL_PATTERNS = [
     (r"/", IndexHandler),
     (r"/api/user/login", LoginHandler),
     (r"/api/user/logout", LogoutHandler),
+    (r"/api/user/reg", UserRegisterHandler),
     (r"/api/user/info", GetUserInfoHandler),
     (r"/api/host", HostHandler),
     (r"/api/host/status", HostStatusHandler),
