@@ -5,7 +5,9 @@ from unittest import TestCase
 
 import mock
 
-from sophon.utils.status import get_host_status, get_host_process_status
+from sophon.utils.status import (
+    get_host_status, get_host_process_status, get_host_docker_status
+)
 
 
 class TestGetHostStatus(TestCase):
@@ -168,6 +170,64 @@ PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND
 
         _subprocess.Popen.assert_called_once_with(
             "ansible 123.123.123.123 -a \"top -b -n 1\"",
+            shell=True,
+            stdout=_subprocess.PIPE
+        )
+        self.assertListEqual(result, [])
+
+
+class TestGetHostDockerStatus(TestCase):
+
+    @mock.patch("sophon.utils.status.subprocess")
+    def test_get_docker_process_status_with_server_available(self, _subprocess):
+        _subprocess.Popen.return_value.stdout.read.return_value = (
+            """182.254.223.239 | SUCCESS | rc=0 >>
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                      PORTS               NAMES
+7f8edf3ddc84        busybox             "sh"                     53 minutes ago      Exited (0) 53 minutes ago                       test-busybox
+29b3c00ee9ee        redis               "/entrypoint.sh redis"   59 minutes ago      Up 59 minutes               6379/tcp            test-redis
+            """
+        )
+
+        result = get_host_docker_status("123.123.123.123")
+
+        _subprocess.Popen.assert_called_once_with(
+            "ansible 123.123.123.123 -a \"docker ps -a\"",
+            shell=True,
+            stdout=_subprocess.PIPE
+        )
+        self.assertListEqual(
+            result,
+            [
+                {
+                    "Command": "\"sh\"",
+                    "Container ID": "7f8edf3ddc84",
+                    "Created": "53 minutes ago",
+                    "Image": "busybox",
+                    "Names": "test-busybox",
+                    "Ports": "",
+                    "Status": "Exited (0) 53 minutes ago"
+                },
+                {
+                    "Command": "\"/entrypoint.sh redis\"",
+                    "Container ID": "29b3c00ee9ee",
+                    "Created": "59 minutes ago",
+                    "Image": "redis",
+                    "Names": "test-redis",
+                    "Ports": "6379/tcp",
+                    "Status": "Up 59 minutes"
+                }
+            ]
+        )
+
+
+    @mock.patch("sophon.utils.status.subprocess")
+    def test_get_host_docker_status_with_server_outage(self, _subprocess):
+        _subprocess.Popen.return_value.stdout.read.return_value = ""
+
+        result = get_host_docker_status("123.123.123.123")
+
+        _subprocess.Popen.assert_called_once_with(
+            "ansible 123.123.123.123 -a \"docker ps -a\"",
             shell=True,
             stdout=_subprocess.PIPE
         )
