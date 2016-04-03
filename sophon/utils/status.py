@@ -7,6 +7,7 @@ import subprocess
 command = {
     "cpu": "top -b -n 1",
     "disk": "df -h .",
+    "docker": "docker ps -a",
     "process": "top -b -n 1"
 }
 
@@ -63,4 +64,33 @@ def get_host_process_status(ip):
                 "Time": process_result[new_index + 11],
                 "Command": process_result[new_index + 12]
             })
+    return result
+
+
+def get_host_docker_status(ip):
+    process = "ansible {0} -a \"{1}\"".format(ip, command["docker"])
+    process_result = subprocess.Popen(
+        process, shell=True, stdout=subprocess.PIPE
+    ).stdout.read().rstrip("\n").split('\n')
+    result = []
+    if "IMAGE" in "".join(process_result):
+        column_names = [
+            "Container ID", "Image", "Command",
+            "Created", "Status", "Ports", "Names"
+        ]
+        range_list = map(
+            process_result[1].find, map(str.upper, column_names)
+        )
+        for line in process_result[2:]:
+            if line.strip() == "":
+                continue
+            cur_ps = dict()
+            for index, column_name in enumerate(column_names):
+                if index + 1 != len(column_names):
+                    beg, end = range_list[index], range_list[index + 1]
+                    cur_ps[column_name] = line[beg:end].strip()
+                else:
+                    beg = range_list[index]
+                    cur_ps[column_name] = line[beg:].strip()
+            result.append(cur_ps)
     return result
