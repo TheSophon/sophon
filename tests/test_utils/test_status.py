@@ -180,6 +180,7 @@ class TestGetHostDockerStatus(TestCase):
 
     @mock.patch("sophon.utils.status.subprocess")
     def test_get_docker_process_status_with_server_available(self, _subprocess):
+        # pylint: disable=line-too-long
         _subprocess.Popen.return_value.stdout.read.return_value = (
             """182.254.223.239 | SUCCESS | rc=0 >>
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                      PORTS               NAMES
