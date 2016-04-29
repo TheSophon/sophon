@@ -76,3 +76,15 @@ class UserRegisterHandler(BaseHandler):
         session.close()
 
         self.write({"msg": "success"})
+
+
+class UserPasswordHanlder(BaseHandler):
+
+    @authenticated
+    def put(self):
+        password = self.get_argument("password")
+        current_username = self.get_secure_cookie("username")
+
+        UserMeta.change_password(username=current_username, password=password)
+
+        self.write({"msg": "success"})
