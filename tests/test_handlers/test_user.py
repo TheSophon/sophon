@@ -13,7 +13,8 @@ from sophon.handlers.user import (
     LoginHandler,
     LogoutHandler,
     GetUserInfoHandler,
-    UserRegisterHandler
+    UserRegisterHandler,
+    UserPasswordHanlder
 )
 
 
@@ -221,4 +222,39 @@ class TestUserRegisterHandler(AsyncHTTPTestCase):
             _session.add.assert_called_once_with(_UserMeta.return_value)
             _session.commit.assert_called_once_with()
             _session.close.assert_called_once_with()
+            self.assertEqual(response_body, {"msg": "success"})
+
+
+class TestUserPasswordHandler(AsyncHTTPTestCase):
+
+    def get_app(self):
+        return tornado.web.Application(
+            [(r"/api/user/password", UserPasswordHanlder)],
+            **TORNADO_SETTINGS
+        )
+
+    @mock.patch("sophon.handlers.user.UserMeta")
+    def test_change_password(self, _UserMeta):
+        with mock.patch.object(
+            UserPasswordHanlder, "get_secure_cookie"
+        ) as _get_secure_cookie:
+            _get_secure_cookie.return_value = "Alice"
+
+            headers = {
+                "Content-Type": "application/x-www-form-urlencoded; "
+                                "charset=UTF-8"
+            }
+            post_data = {
+                "password": "changedpasswd",
+            }
+            post_body = urllib.urlencode(post_data)
+            response = self.fetch(r"/api/user/password",
+                                  method="PUT",
+                                  headers=headers,
+                                  body=post_body)
+            response_body = json.loads(response.body)
+
+            _UserMeta.change_password.assert_called_once_with(
+                username="Alice", password="changedpasswd"
+            )
             self.assertEqual(response_body, {"msg": "success"})
