@@ -36,3 +36,11 @@ class UserMeta(BaseModel):
             return pbkdf2_sha256.verify(password, user_mata_info.password)
         else:
             return False
+
+    @classmethod
+    def change_password(cls, username, password):
+        user_mata_info = cls.query.filter_by(username=username).first()
+        user_mata_info.password = pbkdf2_sha256.encrypt(password)
+        session.add(user_mata_info)
+        session.commit()
+        session.close()

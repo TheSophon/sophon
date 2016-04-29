@@ -6,7 +6,8 @@ from sophon.handlers.user import (
     LoginHandler,
     LogoutHandler,
     GetUserInfoHandler,
-    UserRegisterHandler
+    UserRegisterHandler,
+    UserPasswordHanlder
 )
 from sophon.handlers.host import (
     HostHandler, HostStatusHandler,
@@ -22,6 +23,7 @@ URL_PATTERNS = [
     (r"/api/user/logout", LogoutHandler),
     (r"/api/user/reg", UserRegisterHandler),
     (r"/api/user/info", GetUserInfoHandler),
+    (r"/api/user/password", UserPasswordHanlder),
     (r"/api/host", HostHandler),
     (r"/api/host/status", HostStatusHandler),
     (r"/api/host/(\d+)/process_status", HostProcessStatusHandler),
