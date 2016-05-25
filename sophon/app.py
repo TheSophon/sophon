@@ -15,5 +15,5 @@ def main():
     application = tornado.web.Application(
         URL_PATTERNS, **TORNADO_SETTINGS
     )
-    application.listen(8888, listen=LISTEN_ADDR)
+    application.listen(8888, address=LISTEN_ADDR)
     tornado.ioloop.IOLoop.current().start()
