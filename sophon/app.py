@@ -5,7 +5,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 
-from sophon.config import TORNADO_SETTINGS
+from sophon.config import TORNADO_SETTINGS, LISTEN_ADDR
 from sophon.database import init_db
 from sophon.urls import URL_PATTERNS
 
@@ -15,5 +15,5 @@ def main():
     application = tornado.web.Application(
         URL_PATTERNS, **TORNADO_SETTINGS
     )
-    application.listen(8888)
+    application.listen(8888, listen=LISTEN_ADDR)
     tornado.ioloop.IOLoop.current().start()

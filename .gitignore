@@ -10,4 +10,6 @@ build/
 dist/
 sophon.egg-info/
 
+sophon/config.py
+
 .cache/
