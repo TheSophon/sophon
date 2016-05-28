@@ -16,7 +16,7 @@ class UserMeta(BaseModel):
     id = Column(Integer, autoincrement=True, primary_key=True)
     username = Column(String(100), nullable=False)
     created = Column(Integer, nullable=False)
-    # For user_type, 1 represent dev, 2 represent ops
+    # For user_type, 1 represent ops, 2 represent dev
     user_type = Column(SmallInteger, nullable=False)
     password = Column(String(100), nullable=False)
     public_key = Column(String(100), nullable=False)
